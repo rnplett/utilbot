@@ -12,8 +12,9 @@
  */
 
 const Botkit = require('botkit');
-const creds = require('./creds');
+const SSheet = require('smartSheetApi');
 
+const creds = require('./inputs/creds');
 process.env['ACCESS_TOKEN'] = creds.ACCESS_TOKEN;
 process.env['PUBLIC_URL'] = creds.PUBLIC_URL;
 
@@ -72,6 +73,7 @@ controller.hears(['^help'], 'direct_message,direct_mention', function(bot, messa
 // Bots commands here
 //
 controller.hears(['^SSreg'], 'direct_message,direct_mention', function(bot, message) {
+    SSheet.getRegEmails();
     const replyMessage = {markdown: "Someday I'll be able to read a list of people from a " + 
     "Smartsheet registration sheet and print them into our chat space."
     };
@@ -92,7 +94,7 @@ controller.hears(['(.*)'], 'direct_message,direct_mention', function (bot, messa
 // Fired as the bot is added to a space
 //
 controller.on('bot_space_join', function(bot, message) {
-    bot.reply(message, "Hi, I am the Hello World bot !\n\nType `hello` to see me in action.", function(err, newMessage) {
+    bot.reply(message, "Hi, I am the **Utility bot**!\n\nType `hello` to see me in action.", function(err, newMessage) {
         if (newMessage.roomType == "group") {
             bot.reply(message, "\n\n**Note that this is a 'Group' space. I will answer only when mentionned.**");
         }
