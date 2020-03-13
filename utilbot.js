@@ -12,7 +12,7 @@
  */
 
 const Botkit = require('botkit');
-const SSheet = require('smartSheetApi');
+const SSheet = require('./smartSheetApi');
 
 const creds = require('./inputs/creds');
 process.env['ACCESS_TOKEN'] = creds.ACCESS_TOKEN;
@@ -72,12 +72,12 @@ controller.hears(['^help'], 'direct_message,direct_mention', function(bot, messa
 //
 // Bots commands here
 //
-controller.hears(['^SSreg'], 'direct_message,direct_mention', function(bot, message) {
-    SSheet.getRegEmails();
-    const replyMessage = {markdown: "Someday I'll be able to read a list of people from a " + 
-    "Smartsheet registration sheet and print them into our chat space."
-    };
-    bot.reply(message, replyMessage);
+controller.hears(['^SmartSheet Registrations'], 'direct_message,direct_mention', function(bot, message) {
+    let m = SSheet.getRegEmails(bot, message);
+    // const replyMessage = {markdown: "Someday I'll be able to read a list of people from a " + 
+    // "Smartsheet registration sheet and print them into our chat space. " + m
+    // };
+    // bot.reply(message, replyMessage);
 });
 
 

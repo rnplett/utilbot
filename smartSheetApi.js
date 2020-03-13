@@ -1,29 +1,33 @@
-const rest = require('rest');
+const client = require('smartsheet');
 
 const creds = require('./inputs/creds');
 const TOKEN = creds.SMART_SHEET_TOKEN;
 const SHEETID = creds.SMART_SHEET_ID;
 
-const path = '/2.0/sheets/' + SHEETID;
-const auth = "Bearer " + token;
-const options = {
-    host: 'api.smartsheet.com',
-    port: 443,
-    path: path,
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': auth
-    }
-  };
+const smartsheet = client.createClient({
+  accessToken: TOKEN,
+  logLevel: 'info'
+});
 
-module.exports.getRegEmails = () => {
-    console.log('Hi there')
-    //rest.getJSON(options, (statusCode, result) => {
-        // I could work with the resulting HTML/JSON here. I could also just return it
-        //console.log(`onResult: (${statusCode})\n\n${JSON.stringify(result)}`);
-      
-        // res.statusCode = statusCode;
-      
-        // res.send(result);
-    };
+exports.getRegEmails = (bot, message) => {
+  const getOptions = {
+    url: `sheets/${SHEETID}`
+  }
+  smartsheet.request.get(getOptions)
+  .then(function(sheetInfo) {
+    let emailList = [];
+    let replyStr = "```\nList of Registrants:\n------------------------\n";
+    sheetInfo.rows.forEach(row => {
+      if (!emailList.includes(row.cells[1].value)) {
+        emailList.push(row.cells[1].value);
+        replyStr += `${row.cells[0].value} <${row.cells[1].value}>;\n`;
+      }
+    });
+    replyStr += "```"
+    console.log(replyStr);
+    bot.reply(message, {'markdown': replyStr});
+  })
+  .catch(function(error) {
+    console.log(error);
+  });
+  };
