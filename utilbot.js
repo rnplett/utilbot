@@ -62,8 +62,8 @@ controller.setupWebserver(process.env.PORT || 3000, function(err, webserver) {
 controller.hears(['^help'], 'direct_message,direct_mention', function(bot, message) {
     const helpMessage = {markdown: "Hi, I am the **Utility bot**!" +
     " Type one of the following to see me in action:\n" +
-    " - help -> To see this message\n" +
-    " - SSreg -> To see a registration report from a Smartsheet registration form\n" 
+    " - **help** -> To see this message\n" +
+    " - **Smartsheet Registrations** -> To see a registration report from a Smartsheet registration form\n" 
     };
     bot.reply(message, helpMessage);
 });

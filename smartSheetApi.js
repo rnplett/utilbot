@@ -24,7 +24,6 @@ exports.getRegEmails = (bot, message) => {
       }
     });
     replyStr += "```"
-    console.log(replyStr);
     bot.reply(message, {'markdown': replyStr});
   })
   .catch(function(error) {
