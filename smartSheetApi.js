@@ -17,7 +17,14 @@ exports.getRegEmails = (bot, message) => {
   .then(function(sheetInfo) {
     let emailList = [];
     let replyStr = "```\nList of Registrants:\n------------------------\n";
+    let s = {};
+    s["rows"] = [];
     sheetInfo.rows.forEach(row => {
+      if (row.cells[6].value.match(/.*/i)) {
+        s["rows"].push(row)
+      }
+    });
+    s.rows.forEach(row => {
       if (!emailList.includes(row.cells[1].value)) {
         emailList.push(row.cells[1].value);
         replyStr += `${row.cells[0].value} <${row.cells[1].value}>;\n`;

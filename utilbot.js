@@ -63,17 +63,32 @@ controller.hears(['^help'], 'direct_message,direct_mention', function(bot, messa
     const helpMessage = {markdown: "Hi, I am the **Utility bot**!" +
     " Type one of the following to see me in action:\n" +
     " - **help** -> To see this message\n" +
-    " - **Smartsheet Registrations** -> To see a registration report from a Smartsheet registration form\n" 
+    " - **SS Reg** -> To see a registration report from a Smartsheet registration form\n" 
     };
     bot.reply(message, helpMessage);
 });
 
 
 //
+// Help command
+//
+controller.hears(['^help'], 'direct_message,direct_mention', function(bot, message) {
+    const helpMessage = {markdown: "Hi, I am the **Utility bot**!" +
+    " Type one of the following to see me in action:\n" +
+    " - **help** -> To see this message\n" +
+    " - **Smartsheet Registrations** -> To see a registration report from a Smartsheet registration form\n" 
+    };
+    bot.reply(message, helpMessage);
+});
+
+//
 // Bots commands here
 //
-controller.hears(['^SmartSheet Registrations'], 'direct_message,direct_mention', function(bot, message) {
-    let m = SSheet.getRegEmails(bot, message);
+controller.hears(['^SS Reg'], 'direct_message,direct_mention', function(bot, message) {
+    console.log(message);
+    if (message.user == "rnplett@cisco.com") {
+      let m = SSheet.getRegEmails(bot, message);
+    }
     // const replyMessage = {markdown: "Someday I'll be able to read a list of people from a " + 
     // "Smartsheet registration sheet and print them into our chat space. " + m
     // };
