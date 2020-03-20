@@ -87,11 +87,10 @@ controller.hears(['^help'], 'direct_message,direct_mention', function(bot, messa
 controller.hears(['^SS Reg'], 'direct_message,direct_mention', function(bot, message) {
     if (message.user == "rnplett@cisco.com") {
       let m = SSheet.getRegEmails(bot, message);
-    }
-    // const replyMessage = {markdown: "Someday I'll be able to read a list of people from a " + 
-    // "Smartsheet registration sheet and print them into our chat space. " + m
-    // };
-    // bot.reply(message, replyMessage);
+    } else {
+      replyMessage = "This command is restricted to authorized users only!";
+      bot.reply(message, replyMessage)
+    };
 });
 
 
