@@ -85,7 +85,6 @@ controller.hears(['^help'], 'direct_message,direct_mention', function(bot, messa
 // Bots commands here
 //
 controller.hears(['^SS Reg'], 'direct_message,direct_mention', function(bot, message) {
-    console.log(message);
     if (message.user == "rnplett@cisco.com") {
       let m = SSheet.getRegEmails(bot, message);
     }
