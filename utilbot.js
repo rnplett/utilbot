@@ -64,7 +64,7 @@ controller.hears(['^help'], 'direct_message,direct_mention', function(bot, messa
     " Type one of the following to see me in action:\n" +
     " - **help** -> To see this message\n" +
     " - **SS Reg [regex date filter]** -> To see a registration email report from a Smartsheet registration form\n" +
-    " - **count [regex date filter]** -> To see a registration count report from a Smartsheet registration form\n" 
+    " - **SS Count [regex date filter]** -> To see a registration count report from a Smartsheet registration form\n" 
     };
     bot.reply(message, helpMessage);
 });
@@ -73,7 +73,7 @@ controller.hears(['^help'], 'direct_message,direct_mention', function(bot, messa
 //
 // count command [regex filter of registration date] command
 //
-controller.hears(['^count'], 'direct_message,direct_mention', function(bot, message) {
+controller.hears(['^SS Count'], 'direct_message,direct_mention', function(bot, message) {
   if (message.user == "rnplett@cisco.com") {
     let m = SSheet.getCount(bot, message);
   } else {
