@@ -63,29 +63,31 @@ controller.hears(['^help'], 'direct_message,direct_mention', function(bot, messa
     const helpMessage = {markdown: "Hi, I am the **Utility bot**!" +
     " Type one of the following to see me in action:\n" +
     " - **help** -> To see this message\n" +
-    " - **SS Reg** -> To see a registration report from a Smartsheet registration form\n" 
+    " - **SS Reg [regex date filter]** -> To see a registration email report from a Smartsheet registration form\n" +
+    " - **count [regex date filter]** -> To see a registration count report from a Smartsheet registration form\n" 
     };
     bot.reply(message, helpMessage);
 });
 
 
 //
-// Help command
+// count command [regex filter of registration date] command
 //
-controller.hears(['^help'], 'direct_message,direct_mention', function(bot, message) {
-    const helpMessage = {markdown: "Hi, I am the **Utility bot**!" +
-    " Type one of the following to see me in action:\n" +
-    " - **help** -> To see this message\n" +
-    " - **Smartsheet Registrations** -> To see a registration report from a Smartsheet registration form\n" 
-    };
-    bot.reply(message, helpMessage);
+controller.hears(['^count'], 'direct_message,direct_mention', function(bot, message) {
+  if (message.user == "rnplett@cisco.com") {
+    let m = SSheet.getCount(bot, message);
+  } else {
+    replyMessage = "This command is restricted to authorized users only!";
+    bot.reply(message, replyMessage)
+  };
 });
 
 //
-// Bots commands here
+// ss reg [regex filter of registration date] command
 //
 controller.hears(['^SS Reg'], 'direct_message,direct_mention', function(bot, message) {
     if (message.user == "rnplett@cisco.com") {
+      console.log(message);
       let m = SSheet.getRegEmails(bot, message);
     } else {
       replyMessage = "This command is restricted to authorized users only!";
