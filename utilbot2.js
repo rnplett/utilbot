@@ -18,10 +18,7 @@ app.use('/hello', (req, res, next) => {
 });
 
 app.use('/', (req, res, next) => {
-    if ((req.body.resource == 'messages') && (req.body.event == 'created')) messages.respond(req.body.data);
-    //webex.messages.get(req.body.data.id).then(m => console.log(m.text))
-    //console.log(req.body)
-    //console.log(req.body.data)    
+    if ((req.body.resource == 'messages') && (req.body.event == 'created')) messages.respond(req.body.data);   
 });
 
 app.use((error, req, res, next) => {
