@@ -16,6 +16,31 @@ registration form
 
 `;
 
+const csvParsePromise = (data) => {
+    return new Promise( (resolve, reject) =>{
+        csvParse(data, {columns: true}, (err, records) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(records);
+            }
+        }) 
+    })      
+}
+
+const readFilePromise = (filePath) => {
+    return new Promise( (resolve, reject) => {
+        fs.readFile(filePath, (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(data);
+            }
+        })
+    })
+}
+
+
 
 const sendHelpInfo = (data) => {
     webex.messages.create({
@@ -65,29 +90,63 @@ const echoTextData = (data,a) => {
 }
 
 const createEmailSummary = (csv) => {
-    return new Promise(resolve => {
-        csvParse(csv, { columns: true }, (err, records) => {
-            let text = "Domain List\n===========\n";
-            let domainList = {};
-            col1 = 'Email Address';
-            records.forEach(element => {
-                d = element[col1].match(/\@(.*)$/)[1].toLowerCase();
-                if (!domainList[d]) {
-                    domainList[d] = 1;
-                } else {
-                    domainList[d] += 1;
-                }
-            })
-            domains = [];
-            for (let p in domainList) {domains.push(p)};
-            domains.sort();
-            domains.forEach( p => {
-                text += p + " - " + domainList[p].toString() + "\n"
-            });
-            resolve(text);
+    return new Promise(async resolve => {
+        const minerCsv = await readFilePromise('./inputs/miners.csv');
+        const mObjectArray = await csvParsePromise(minerCsv);
+        miners = []
+        mObjectArray.forEach(element => {
+            miners.push(element['Miner']);
         })
-    })
-    
+
+        const records = await csvParsePromise(csv);
+        let text = "\n\n\nDomain List\n===========\n";
+        let domainList = {};
+        col1 = 'Email Address';
+        records.forEach(element => {
+            d = element[col1].match(/\@(.*)$/)[1].toLowerCase();
+            if (!domainList[d]) {
+                domainList[d] = 1;
+            } else {
+                domainList[d] += 1;
+            }
+        })
+        domains = [];
+        for (let p in domainList) {domains.push(p)};
+        domains.sort();
+
+        leaders = ['cisco.com','westburne.ca'];
+        text += '\nLeaders Group\n---------------\n';
+        let leadersTotal = 0;
+        leaders.forEach( p => {
+            text += p + " - " + domainList[p].toString() + "\n";
+            leadersTotal += domainList[p];
+        })
+        text += '\nMining Companies\n-----------------\n';
+        let minersTotal = 0;
+        miners.forEach( p => {
+            text += p + " - " + domainList[p].toString() + "\n";
+            minersTotal += domainList[p];
+        })
+        text += '\nOther Organizations\n-------------------\n';
+        let othersTotal = 0;
+        domains.forEach( p => {
+            if ((!miners.includes(p)) & (!leaders.includes(p))) {
+                text += p + " - " + domainList[p].toString() + "\n";
+                othersTotal += domainList[p];
+            }
+        });
+
+        summary = 'Group Totals:\n=============\n'
+        summary += 'Cisco and Westburne: ' + leadersTotal.toString() + "\n";
+        summary += 'Mining Company Registrants: ' + minersTotal.toString() + '\n';
+        summary += 'Other Registrants: ' + othersTotal.toString() + '\n';
+        let total = leadersTotal + minersTotal + othersTotal
+        summary += '\nTotal: ' + total.toString(); + '\n\n '
+
+        text = summary + text;
+
+        resolve(text);
+    })    
 }
 
 const createNameList = (csv) => {
@@ -113,16 +172,17 @@ const createNameList = (csv) => {
 const sendEmailReport = async (data,csv) => {
     const doc = new pdf;
     doc.pipe(fs.createWriteStream('./public/doc.pdf'));
-    doc.fontSize(8);
+    doc.fontSize(10);
     p1 = await createEmailSummary(csv);
     p2 = await createNameList(csv);
     doc.text(p1, {
-        columns: 3
+        columns: 2
     });
     doc.addPage();
+    doc.fontSize(8);
     doc.text(p2, {
         columns: 2
-    })
+    });
     doc.end();
     webex.messages.create({
         roomId: data.roomId,
