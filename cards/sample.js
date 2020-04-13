@@ -5,6 +5,8 @@ A second line of text.
 `
 
 exports.MARKDOWN = `
+F001
+
 **Tell us about yourself**
 
 We just need a few more details to get you booked for the trip of a lifetime!
@@ -13,6 +15,14 @@ Don't worry, we'll never share or sell your information.\n
 
 **Please enter your name**:
 `
+
+exports.ACTION = {
+    type: 'submit',
+    messageId: '',
+    inputs:{
+        dueDate: '17/02/2020'
+    }
+}
 
 exports.CARD = JSON.parse(`
 [
@@ -30,6 +40,11 @@ exports.CARD = JSON.parse(`
                 "type": "Column",
                 "width": 2,
                 "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "F001",
+                    "size": "small"
+                  },
                   {
                     "type": "TextBlock",
                     "text": "Tell us about yourself",
@@ -115,5 +130,3 @@ exports.CARD = JSON.parse(`
       }
     }
 ]`)
-
-exports

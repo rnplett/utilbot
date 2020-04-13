@@ -1,7 +1,7 @@
 const Webex = require('webex');
 const creds = require('./inputs/creds');
 
-process.env.WEBEX_ACCESS_TOKEN=creds.TEST_ACCESS_TOKEN;
+process.env.WEBEX_ACCESS_TOKEN=creds.BOT_ACCESS_TOKEN;
 const webex = require('webex/env');
 
 exports.init = () => {
@@ -20,6 +20,21 @@ exports.init = () => {
                     event: 'all',
                     targetUrl: creds.PUBLIC_URL,
                     name: 'Firehose Webhook'
+                })
+                // Make sure to log errors in case something goes wrong.
+                .catch((err) => {
+                    console.log('no listening from here!')
+                    console.error(reason);
+                    process.exit(1);
+                });
+        })
+        .then(() => {
+            webex.webhooks
+                .create({
+                    resource: 'attachmentActions',
+                    event: 'created',
+                    targetUrl: creds.PUBLIC_URL + '/attachment',
+                    name: 'Attachment Actions Webhook'
                 })
                 // Make sure to log errors in case something goes wrong.
                 .catch((err) => {
