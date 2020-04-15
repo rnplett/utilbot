@@ -101,6 +101,60 @@ const echoTextData = (data,a) => {
     })
 }
 
+const sendCventInviteImport = (data, inputs) => {
+        let url = fs.readFileSync('./data/url.txt').toString();
+        const options = {
+            json: true,
+            headers: { Authorization: "Bearer " + creds.BOT_ACCESS_TOKEN}
+        };
+        request(url, options, async (err, res, body) => {
+            let csv = body;
+            const records = await csvParsePromise(csv);
+            let text = "Contacts,,,,,,,,,,,,,,,,,,,,,,\n";
+            text += "UUID,Name,Email,Company,JobTitle,URL,OffCntry,OffLocal,CellCntry,CellLocal,FaxCntry,FaxLocal,Address1,Address2,City,State/Province,Zip/Postal,Country,Time Zone,Language,Locale,UserName,Notes\n";
+            colFilter = inputs['columnName'];
+            rowFilter = inputs['rowContent'];
+            let c = "";
+            let name;
+            let email;
+            records.forEach(row => {
+                if (c == "") {
+                    let re = new RegExp(inputs['columnName'],'i');
+                    for (p in row) { if (p.match(re)) { 
+                        c = p;
+                    }};
+                };
+                re = new RegExp(inputs['rowContent'],'i');
+                let reName = new RegExp(inputs['nameField'],'i');
+                let reEmail = new RegExp(inputs['emailField'],'i');
+                if (row[c].match(re)) {
+                    for (p in row) {
+                        if(p.match(reName)) {
+                            name = row[p];
+                            continue;
+                        };
+                        if(p.match(reEmail)) {
+                            email = row[p];
+                            continue;
+                        };                  
+                    };
+                    text += ',"' + name + '",' + email + ",,,,,,,,,,,,,,,,,,,,\n";
+                };
+            })
+            fs.writeFileSync('./public/webexEventImport.csv',text)
+            webex.messages.create({
+                roomId: data.roomId,
+                files: [creds.PUBLIC_URL + '/webexEventImport.csv']
+            })
+            .then(() => {
+                fs.unlinkSync('./public/webexEventImport.csv')
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        })
+}
+
 const createEmailSummary = (csv) => {
     return new Promise(async resolve => {
         const minerCsv = await readFilePromise('./inputs/miners.csv');
@@ -256,7 +310,9 @@ exports.attachment = (data) => {
             headers: { Authorization: "Bearer " + creds.BOT_ACCESS_TOKEN}
         };
         request('https://api.ciscospark.com/v1/attachment/actions/' + data.id, options, (err, res, body) => {
-            if (m.text.match(/^F001/)) sendEmailReport(data,body.inputs);
+            //console.log(body.inputs)
+            if (body.inputs.inviteDif == 'true') sendCventInviteImport(data,body.inputs);
+            if (body.inputs.groupSummary == 'true') sendEmailReport(data,body.inputs);
             if (m.text.match(/^F002/)) echoJSONData(data,body.inputs);            
         })
     })

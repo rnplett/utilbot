@@ -56,8 +56,8 @@ exports.CARD = JSON.parse(`
                                 "items": [
                                     {
                                         "type": "TextBlock",
-                                        "text": "Email CSV Task List",
-                                        "size": "Medium",
+                                        "text": "CSV File (with emails)",
+                                        "size": "Large",
                                         "weight": "Bolder"
                                     }
                                 ]
@@ -68,11 +68,12 @@ exports.CARD = JSON.parse(`
             },
             {
                 "type": "TextBlock",
-                "text": "Tell me what you'd like to do with the CSV you uploaded"
+                "text": "Tell me what you'd like to do with the CSV file you uploaded"
             },
             {
                 "type": "TextBlock",
                 "text": "Registration Report",
+                "size": "Medium",
                 "weight": "Bolder"
             },
             {
@@ -91,36 +92,135 @@ exports.CARD = JSON.parse(`
             },
             {
                 "type": "Input.Toggle",
-                "title": "Name List",
+                "title": "Name List (for Engage CSV Exports)",
                 "id": "nameList",
                 "wrap": false,
                 "value": "false"
             },
             {
                 "type": "TextBlock",
-                "text": "New emails since previous upload",
+                "text": "Filtered Lists",
+                "size": "Medium",
                 "weight": "Bolder"
             },
             {
-                "type": "Input.Toggle",
-                "title": "Cvent Invitation Import",
-                "id": "inviteDif",
-                "wrap": false,
-                "value": "false"
+                "type": "ColumnSet",
+                "columns": [
+                    {
+                        "type": "Column",
+                        "width": 2,
+                        "items": [
+                            {
+                                "type": "TextBlock",
+                                "text": "Regex List Filter: "
+                            }
+                        ],
+                        "verticalContentAlignment": "Center"
+                    },
+                    {
+                        "type": "Column",
+                        "width": 1,
+                        "items": [
+                            {
+                                "type": "TextBlock",
+                                "text": "Column Name",
+                                "size": "Small",
+                                "weight": "Lighter"
+                            },
+                            {
+                                "type": "Input.Text",
+                                "id": "columnName",
+                                "placeholder": "Week 1"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Column",
+                        "width": 1,
+                        "items": [
+                            {
+                                "type": "TextBlock",
+                                "text": "Row Content",
+                                "size": "Small",
+                                "weight": "Lighter"
+                            },
+                            {
+                                "type": "Input.Text",
+                                "id": "rowContent",
+                                "placeholder": "April 9"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "ColumnSet",
+                "columns": [
+                    {
+                        "type": "Column",
+                        "width": 2,
+                        "items": [
+                            {
+                                "type": "Input.Toggle",
+                                "title": "Cvent Invitation Import",
+                                "id": "inviteDif",
+                                "wrap": false,
+                                "value": "false"
+                            }
+                        ],
+                        "verticalContentAlignment": "Center"
+                    },
+                    {
+                        "type": "Column",
+                        "width": 1,
+                        "items": [
+                            {
+                                "type": "TextBlock",
+                                "text": "Name Field",
+                                "size": "Small",
+                                "weight": "Lighter"
+                            },
+                            {
+                                "type": "Input.Text",
+                                "id": "nameField",
+                                "placeholder": "Full Name"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Column",
+                        "width": 1,
+                        "items": [
+                            {
+                                "type": "TextBlock",
+                                "text": "Email Field",
+                                "size": "Small",
+                                "weight": "Lighter"
+                            },
+                            {
+                                "type": "Input.Text",
+                                "id": "emailField",
+                                "placeholder": "email"
+                            }
+                        ]
+                    }
+                ]
             },
             {
                 "type": "Input.Toggle",
                 "title": "Email BCC List",
                 "id": "emailDif",
                 "wrap": false,
-                "value": "false"
+                "value": "false",
+                "color": "grey"
             },
             {
                 "type": "Input.Toggle",
                 "title": "List to add to Teams",
                 "id": "teamsDif",
                 "wrap": false,
-                "value": "false"
+                "value": "false",
+                "color": "grey"
             }
         ],
         "actions": [
