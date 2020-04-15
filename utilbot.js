@@ -24,12 +24,12 @@ app.use('/hello', (req, res, next) => {
 
 app.use('/attachment', (req, res, next) => {
     if ((req.body.resource == 'attachmentActions') && (req.body.event == 'created')) messages.attachment(req.body.data)
-    console.log(req.body);
+    //console.log(req.body);
 });
 
 app.use('/', (req, res, next) => {
     if ((req.body.resource == 'messages') && (req.body.event == 'created') && !(req.body.data.personEmail.match(/webex.bot/))) messages.respond(req.body.data);  
-    console.log(req.body);
+    //console.log(req.body);
 });
 
 app.use((error, req, res, next) => {

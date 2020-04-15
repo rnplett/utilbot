@@ -9,7 +9,7 @@ exports.init = () => {
     webex.webhooks.list()
         .then((webhooks) => {
             webhooks.items.forEach(element => {
-                console.log(element);
+                //console.log(element);
                 webex.webhooks.remove(element)
             });
         })

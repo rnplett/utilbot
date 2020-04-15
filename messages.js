@@ -1,6 +1,7 @@
 const webex = require('webex/env');
 const Webex = require('webex');
 const sample = require('./cards/sample');
+const reportCsv = require('./cards/reportCsv')
 const request = require('request');
 const creds = require('./inputs/creds');
 const csvParse = require('csv-parse');
@@ -67,6 +68,18 @@ const sendCard = (data) => {
     })
 }
 
+const sendCardReportCsv = (data) => {
+    webex.messages.create({
+        roomId: data.roomId,
+        text: reportCsv.TEXT,
+        markdown: reportCsv.MARKDOWN,
+        attachments: reportCsv.CARD,
+    })
+    .catch((err) => {
+        console.log(err)
+    })
+}
+
 const echoJSONData = (data,a) => {
     webex.messages.create({
         roomId: data.roomId,
@@ -114,15 +127,17 @@ const createEmailSummary = (csv) => {
         for (let p in domainList) {domains.push(p)};
         domains.sort();
 
-        leaders = ['cisco.com','westburne.ca'];
+        leaders = creds.CSV_LEADERS;
         text += '\nLeaders Group\n---------------\n';
         let leadersTotal = 0;
+        leaders.sort();
         leaders.forEach( p => {
             text += p + " - " + domainList[p].toString() + "\n";
             leadersTotal += domainList[p];
         })
         text += '\nMining Companies\n-----------------\n';
         let minersTotal = 0;
+        miners.sort();
         miners.forEach( p => {
             text += p + " - " + domainList[p].toString() + "\n";
             minersTotal += domainList[p];
@@ -170,30 +185,40 @@ const createNameList = (csv) => {
 }
 
 const sendEmailReport = async (data,csv) => {
-    const doc = new pdf;
-    doc.pipe(fs.createWriteStream('./public/doc.pdf'));
-    doc.fontSize(10);
-    p1 = await createEmailSummary(csv);
-    p2 = await createNameList(csv);
-    doc.text(p1, {
-        columns: 2
+    // get csv file
+    let url = fs.readFileSync('./data/url.txt').toString();
+    const options = {
+        json: true,
+        headers: { Authorization: "Bearer " + creds.BOT_ACCESS_TOKEN}
+    };
+    request(url, options, async (err, res, body) => {
+        let csv = body
+        // construct report
+        const doc = new pdf;
+        doc.pipe(fs.createWriteStream('./public/doc.pdf'));
+        doc.fontSize(10);
+        p1 = await createEmailSummary(csv);
+        p2 = await createNameList(csv);
+        doc.text(p1, {
+            columns: 2
+        });
+        doc.addPage();
+        doc.fontSize(8);
+        doc.text(p2, {
+            columns: 2
+        });
+        doc.end();
+        webex.messages.create({
+            roomId: data.roomId,
+            files: [creds.PUBLIC_URL + '/doc.pdf']
+        })
+        .then(() => {
+            fs.unlinkSync('./public/doc.pdf')
+        })
+        .catch((err) => {
+            console.log(err)
+        })
     });
-    doc.addPage();
-    doc.fontSize(8);
-    doc.text(p2, {
-        columns: 2
-    });
-    doc.end();
-    webex.messages.create({
-        roomId: data.roomId,
-        files: [creds.PUBLIC_URL + '/doc.pdf']
-    })
-    .then(() => {
-        fs.unlinkSync('./public/doc.pdf')
-    })
-    .catch((err) => {
-        console.log(err)
-    })
 }
 
 exports.respond = (data) => {
@@ -202,10 +227,13 @@ exports.respond = (data) => {
             json: true,
             headers: { Authorization: "Bearer " + creds.BOT_ACCESS_TOKEN}
         };
+
         request(data.files[0], options, (err, res, body) => {
-            console.log(res.headers);
             if (res.headers['content-type'].match(/csv/)) {
-                sendEmailReport(data, body)
+                fs.writeFile('./data/url.txt', data.files, err => {
+                    if (err) throw err;
+                });
+                sendCardReportCsv(data)
             }
         })
     } else {
@@ -229,7 +257,7 @@ exports.attachment = (data) => {
             headers: { Authorization: "Bearer " + creds.BOT_ACCESS_TOKEN}
         };
         request('https://api.ciscospark.com/v1/attachment/actions/' + data.id, options, (err, res, body) => {
-            if (m.text.match(/^F001/)) echoJSONData(data,body.inputs);
+            if (m.text.match(/^F001/)) sendEmailReport(data,body.inputs);
             if (m.text.match(/^F002/)) echoJSONData(data,body.inputs);            
         })
     })
