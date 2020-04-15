@@ -12,8 +12,7 @@ const HELP_MESSAGE = `
 Hi I am the **Utility Bot**! Type one of the following to see me in action:
 
 - **help** -> To see this message
-- **SS Reg [regex date filter]** -> To see a registration email report from a Smartsheet 
-registration form
+- **[upload a CSV file]** -> this will generate a card with task options
 
 `;
 
