@@ -1,19 +1,18 @@
 
 exports.TEXT = `
-This is some placeholder text.
-A second line of text.
+F001
+Welcome to the CSV utility bot
+------------------------------
+
+This bot doesn't work on this device right now. The best experience is on the desktop Teams app.
 `
 
 exports.MARKDOWN = `
 F001
 
-**Tell us about yourself**
+**Welcome to the CSV utility bot**
 
-We just need a few more details to get you booked for the trip of a lifetime!
-
-Don't worry, we'll never share or sell your information.\n
-
-**Please enter your name**:
+This bot doesn't work on this device right now. The best experience is on the desktop Teams app.
 `
 
 exports.ACTION = {
