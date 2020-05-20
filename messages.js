@@ -221,15 +221,35 @@ const createNameList = (csv) => {
     return new Promise(resolve => {
         csvParse(csv, { columns: true }, (err, records) => {
             let text = "Name List\n===========\n";
-            records.forEach( row => {
+            let data = [...records];
+            data.map(row => {
+                row["domain"] = row['Email Address'].match(/\@(.*)$/)[1].toLowerCase()
+            })
+            function compare(a, b) {
+                if (a.domain > b.domain) return 1;
+                if (b.domain > a.domain) return -1;
+                return 0;
+              }
+            data.sort(compare);
+            let d = "";
+            data.forEach( row => {
+                if (d != row.domain) {
+                    text += row.domain + "\n";      
+                    d = row.domain;           
+                };
+                let line = "    ";
                 for (p in row) {
                     if(p.match(/Full/)) {
-                        text += row[p];
+                        line += row[p];
                     }
                     if(p.match(/Company/)) {
-                        text += "  -  " + row[p] + "\n";
+                        line += "  -  " + row[p] + "\n";
                     }
                 }
+                if (line.length > 50) {
+                    line = line.substr(0,50) + "\n";
+                }
+                text += line;
             });
             resolve(text);
         })
